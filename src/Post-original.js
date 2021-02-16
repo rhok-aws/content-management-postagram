@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { API, Storage } from 'aws-amplify';
 import { getPost } from './graphql/queries';
 import Button from './Button';
-
+// my first git commit
 export default function Post() {
   const [loading, updateLoading] = useState(true);
   const [post, updatePost] = useState(null);
