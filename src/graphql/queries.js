@@ -6,11 +6,17 @@ export const getPost = /* GraphQL */ `
     getPost(id: $id) {
       id
       name
-      location
-      description
+      team
+      project
+      vertical
+      date
+      program
+      contentowner
+      tags
       image
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -24,11 +30,17 @@ export const listPosts = /* GraphQL */ `
       items {
         id
         name
-        location
-        description
+        team
+        project
+        vertical
+        date
+        program
+        contentowner
+        tags
         image
         createdAt
         updatedAt
+        owner
       }
       nextToken
     }

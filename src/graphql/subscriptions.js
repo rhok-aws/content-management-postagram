@@ -6,11 +6,17 @@ export const onCreatePost = /* GraphQL */ `
     onCreatePost {
       id
       name
-      location
-      description
+      team
+      project
+      vertical
+      date
+      program
+      contentowner
+      tags
       image
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -19,11 +25,17 @@ export const onUpdatePost = /* GraphQL */ `
     onUpdatePost {
       id
       name
-      location
-      description
+      team
+      project
+      vertical
+      date
+      program
+      contentowner
+      tags
       image
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -32,11 +44,17 @@ export const onDeletePost = /* GraphQL */ `
     onDeletePost {
       id
       name
-      location
-      description
+      team
+      project
+      vertical
+      date
+      program
+      contentowner
+      tags
       image
       createdAt
       updatedAt
+      owner
     }
   }
 `;

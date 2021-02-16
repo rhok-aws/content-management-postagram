@@ -1,16 +1,27 @@
 // Working version
 
 import React, { useState } from 'react';
-import { css } from '@emotion/react';
+import { jsx,css } from '@emotion/react';
 import Button from './Button';
 import { v4 as uuid } from 'uuid';
 import { Storage, API, Auth, Amplify } from 'aws-amplify';
-import { createPost } from './graphql/mutations';
+import { updatePost } from './graphql/mutations';
+import { Link,Router } from 'react-router-dom'
+
+
 
 // Date Picker
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+
+// // Getting data passed from Post
+
+import {useLocation} from "react-router-dom";
+import  {  useEffect } from 'react';
+
+// Fixing input error
+
 
 import Select from 'react-select';
 console.log ('Start loading CreatePost.js')
@@ -22,6 +33,15 @@ Amplify.configure({
       }
   }
 });
+
+
+
+// Display value from post
+
+
+// Display value from post
+
+
 
 // Vertical values
 const verticals = [
@@ -54,7 +74,10 @@ const initialState = {
   saving: false
 };
 
-export default function CreatePost({
+
+
+
+export default function EditPost({
   updateOverlayVisibility, updatePosts, posts
 }) {
   /* 1. Create local state with useState hook */
@@ -63,8 +86,22 @@ export default function CreatePost({
   const [startDate, setStartDate] = useState(new Date());
 
 
+  let location = useLocation();
+
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    setFormData(location.state)
+    updateFormState(location.state)
+
+    console.log('Data passing from Post', location.state)
+
+  },[]);
+
+
+
   /* 2. onChangeText handler updates the form state when a user types into a form field */
-  function onChangeText(e) {
+ const onChangeText = (e) => {
     e.persist();
     console.log('Value of event',e)
     updateFormState(currentState => ({ ...currentState, [e.target.name]: e.target.value }));
@@ -102,52 +139,66 @@ export default function CreatePost({
   
   }
 
-  // On select change
 
 
   /* 4. Save the post  */
   async function save() {
     try {
-      const { name, project, team, vertical, date, program, contentowner, owner, tags, image } = formState;
+      const { id,name, project, team, vertical, date, program, contentowner, owner, tags, image } = formState;
       // if (!name || !project || !team || !vertical || !date || !program || !owner || !tags || !image.name) return;
       updateFormState(currentState => ({ ...currentState, saving: true }));
-      const postId = uuid();
+      const postId = id
       // const postInfo = { name, project: "1", team: "1", vertical:"1", date:"1", program:"1", owner:"1", tags:"1", image: formState.image.name, id: postId };
       const postInfo = { name, project: formState.project, team: formState.team, vertical: formState.vertical, date: startDate, program: formState.program, contentowner: formState.contentowner, tags: formState.tags, image: formState.image.name, id: postId };
 
       // Debugging purpose 
       console.log("Value of Post Info", postInfo);
 
-
-      await Storage.put(formState.image.name, formState.image.fileInfo);
+      console.log ('Image info', formState.image.name ,formState.image.fileInfo )
+      
+      if (formState.image.name && formState.image.fileInfo ){ await Storage.put(formState.image.name, formState.image.fileInfo); }
       await API.graphql({
-        query: createPost,
+        query: updatePost,
         variables: { input: postInfo },
         authMode: 'AMAZON_COGNITO_USER_POOLS'
       }); // updated
       const { username } = await Auth.currentAuthenticatedUser(); // new
-      updatePosts([...posts, { ...postInfo, image: formState.file, owner: username }]); // updated
+      // updatePosts([...posts, { ...postInfo, image: formState.file, owner: username }]); // updated
       updateFormState(currentState => ({ ...currentState, saving: false }));
-      updateOverlayVisibility(false);
+
+      alert('Saving post was successful!')
+      // updateOverlayVisibility(false);
     } catch (err) {
       console.log('error: ', err);
+      alert('Saving post was failed')
     }
   }
 
+
   return (
+
     <div className={containerStyle}>
+
+      <h1>Post ID: {formData.id} </h1>
+      <h1> Edit Post</h1>
+      Name: 
       <input
         placeholder="File name"
         name="name"
-        className={inputStyle}
+        defaultValue =  {formData.name}
         onChange={onChangeText}
+
       />
+      <hr/>
+      Project:
       <input
         placeholder="Project Name"
         name="project"
-        className={inputStyle}
         onChange={onChangeText}
+        defaultValue =  {formData.project||""}
       />
+       <hr/>
+       Team:
       <Select
         placeholder="Team"
         name="team"
@@ -155,9 +206,12 @@ export default function CreatePost({
 
         onChange={  onSelectChangeTeam}
 
+        selectedValue =  {formData.teams||""}
+
         
       />
-
+    <hr/>
+       Vertical:
       <Select 
         placeholder="Vertical"
         name="vertical"
@@ -165,42 +219,76 @@ export default function CreatePost({
 
         onChange={ onSelectChangeVertical}
 
-
+        selectedValue=  {formData.verticals||""}
       />
-
+<hr/>
+       Date:
 <DatePicker selected={startDate} onChange={date => setStartDate(date)} />
 
-
+<hr/>
+       Program:
       <input
         placeholder="Program"
         name="program"
-        className={inputStyle}
         onChange={onChangeText}
+        defaultValue = {formData.program||""}
       />
+      <hr/>
+       Content onwer:
       <input
         placeholder="Content Owner"
         name="contentowner"
-        className={inputStyle}
         onChange={onChangeText}
+        defaultValue =  {formData.contentowner||""}
       />
+      <hr/>
+       Tags:
       <input
         placeholder="Tags"
         name="tags"
-        className={inputStyle}
         onChange={onChangeText}
 
+        defaultValue=  {formData.tags||""}
+
       />
+
+      <h1>Current photo</h1>
+      <hr/>
+      <img alt="post" src={formData.image} className={imageStyle} />
+
       <input 
         type="file"
         onChange={onChangeFile}
       />
-      { formState.file && <img className={imageStyle} alt="preview" src={formState.file} /> }
-      <Button title="Upload New File" onClick={save} />
+    
+      {
+       formState.file && <img className={imageStyle} alt="preview" src={formState.file} /> 
+       
+       }
+
+      <hr/>
+
+      <Button title="Save File" onClick={save} />
+
+        ||
+
       <Button type="cancel" title="Cancel" onClick={() => updateOverlayVisibility(false)} />
-      { formState.saving && <p className={savingMessageStyle}>Saving file...</p> }
+
+      { formState.saving && <p className={savingMessageStyle}> Updating post...</p> }
+
+       <hr/>
+      <Link to={{
+       pathname: '/',
+      
+    }} >
+                <button > Back to home page  </button>
+      </Link>
+
     </div>
   )
-}
+
+
+}//end of functional component
 
 const inputStyle = css`
   margin-bottom: 10px;

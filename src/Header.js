@@ -1,12 +1,12 @@
 import React from 'react';
-import { css } from 'emotion';
+import { css } from '@emotion/react';
 import { Link } from 'react-router-dom';
 
 export default function Header() {
   return (
     <div className={headerContainer}>
-      <h1 className={headerStyle}>Postagram</h1>
-      <Link to="/" className={linkStyle}>All Posts</Link>
+      <h1 className={headerStyle}>Upload files into S3</h1>
+      <Link to="/myposts" className={linkStyle}>All Files</Link>
     </div>
   )
 }

@@ -1,5 +1,3 @@
-// Working version
-
 import React, { useState } from 'react';
 import { css } from '@emotion/react';
 import Button from './Button';
@@ -47,7 +45,7 @@ const initialState = {
   vertical: '',
   date: '',
   program: '',
-  contentowner: '',
+  owner: '',
   tags: '',
   image: {},
   file: '',
@@ -60,16 +58,15 @@ export default function CreatePost({
   /* 1. Create local state with useState hook */
   const [formState, updateFormState] = useState(initialState)
 
-  const [startDate, setStartDate] = useState(new Date());
-
-
   /* 2. onChangeText handler updates the form state when a user types into a form field */
   function onChangeText(e) {
     e.persist();
-    console.log('Value of event',e)
     updateFormState(currentState => ({ ...currentState, [e.target.name]: e.target.value }));
   }
- 
+  function onChangeTeam(e) {
+    e.persist();
+    updateFormState(currentState => ({ ...currentState, [e.target.team]: e.target.value }));
+  }
 
   /* 3. onChangeFile handler will be fired when a user uploads a file  */
   function onChangeFile(e) {
@@ -79,41 +76,15 @@ export default function CreatePost({
     updateFormState(currentState => ({ ...currentState, file: URL.createObjectURL(e.target.files[0]), image }))
   }
 
-
-  // On select change
-  
-  function onSelectChangeTeam (e){
-    updateFormState(currentState => ({ ...currentState, team: e.value}))
-
-  }
-
-  function onSelectChangeVertical(e) {
-    console.log('select')
-    updateFormState(currentState => ({ ...currentState, vertical: e.value}))
-
-  }
-
-
-  function onSelectDate(e) {
-    console.log('select')
-    updateFormState(currentState => ({ ...currentState, date: e.value}))
-
-
-  
-  }
-
-  // On select change
-
-
   /* 4. Save the post  */
   async function save() {
     try {
-      const { name, project, team, vertical, date, program, contentowner, owner, tags, image } = formState;
+      const { name, project, team, vertical, date, program, owner, tags, image } = formState;
       // if (!name || !project || !team || !vertical || !date || !program || !owner || !tags || !image.name) return;
       updateFormState(currentState => ({ ...currentState, saving: true }));
       const postId = uuid();
       // const postInfo = { name, project: "1", team: "1", vertical:"1", date:"1", program:"1", owner:"1", tags:"1", image: formState.image.name, id: postId };
-      const postInfo = { name, project: formState.project, team: formState.team, vertical: formState.vertical, date: startDate, program: formState.program, contentowner: formState.contentowner, tags: formState.tags, image: formState.image.name, id: postId };
+      const postInfo = { name, project: formState.project, team: formState.team, vertical: formState.vertical, date: formState.date, program: formState.program, owner: formState.owner, tags: formState.tags, image: formState.image.name, id: postId };
 
       // Debugging purpose 
       console.log("Value of Post Info", postInfo);
@@ -152,25 +123,18 @@ export default function CreatePost({
         placeholder="Team"
         name="team"
         options={teams}
-
-        onChange={  onSelectChangeTeam}
-
-        
+        onChange={onChangeText}
       />
-
       <Select 
         placeholder="Vertical"
         name="vertical"
         options={verticals}
-
-        onChange={ onSelectChangeVertical}
-
-
+        onChange={onChangeText}
       />
-
-<DatePicker selected={startDate} onChange={date => setStartDate(date)} />
-
-
+      <DatePicker 
+        name="date"
+        onChange={onChangeText}
+      />
       <input
         placeholder="Program"
         name="program"
@@ -179,7 +143,7 @@ export default function CreatePost({
       />
       <input
         placeholder="Content Owner"
-        name="contentowner"
+        name="owner"
         className={inputStyle}
         onChange={onChangeText}
       />
@@ -188,7 +152,6 @@ export default function CreatePost({
         name="tags"
         className={inputStyle}
         onChange={onChangeText}
-
       />
       <input 
         type="file"

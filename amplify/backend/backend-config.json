@@ -9,10 +9,17 @@
             "authenticationType": "API_KEY",
             "apiKeyConfig": {
               "apiKeyExpirationDays": 365,
-              "description": "public"
+              "description": ""
             }
           },
-          "additionalAuthenticationProviders": []
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+              "userPoolConfig": {
+                "userPoolId": "authpostagram8bff5a2d"
+              }
+            }
+          ]
         }
       }
     }
@@ -25,10 +32,5 @@
       "customAuth": false
     }
   },
-  "storage": {
-    "images": {
-      "service": "S3",
-      "providerPlugin": "awscloudformation"
-    }
-  }
+  "storage": {}
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { css } from 'emotion';
+import { css  } from '@emotion/react';
 import { Link } from 'react-router-dom';
 
 export default function Posts({
@@ -7,7 +7,7 @@ export default function Posts({
 }) {
   return (
     <>
-      <h1>Posts</h1>
+      <h1>My Uploads</h1>
       {
         posts.map(post => (
           <Link to={`/post/${post.id}`} className={linkStyle} key={post.id}>
@@ -42,6 +42,5 @@ const postContainer = css`
 `
 
 const imageStyle = css`
-  width: 100%;
-  max-width: 400px;
+  width: 100px;
 `

@@ -5,12 +5,6 @@ import { API, Storage } from 'aws-amplify';
 import { getPost } from './graphql/queries';
 import Button from './Button';
 
-
-//link to edit button
-import { Link,Router } from 'react-router-dom'
-
-
-
 export default function Post() {
   const [loading, updateLoading] = useState(true);
   const [post, updatePost] = useState(null);
@@ -37,22 +31,11 @@ export default function Post() {
       console.log('error: ', err)
     }
   }
-  if (loading) return <h3>......Loading...</h3>
+  if (loading) return <h3>Loading...</h3>
   console.log('post: ', post)
-
-
-
-
   return (
     <>
-     
-     <Link to={{
-       pathname: '/EditPost',
-       state: post
-    }} >
-                <button > Edit   </button>
-      </Link>
-
+      <Button title="Edit" />
       <h3 className={titleStyle}>{"Title: " + post.name}</h3>
       <h3 className={projectStyle}>{"Project: " + post.project}</h3>
       <h3>{"Team: " + post.team}</h3>
